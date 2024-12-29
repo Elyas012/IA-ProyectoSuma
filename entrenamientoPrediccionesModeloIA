@@ -1,0 +1,44 @@
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Modelo de IA ajustado
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(16, activation='relu', input_shape=(3,)),  # 3 features: origen, destino, opciones
+    tf.keras.layers.Dense(8, activation='relu'),
+    tf.keras.layers.Dense(1)  # Predicción de la distancia total
+])
+
+model.compile(optimizer='adam', loss='mse')
+
+# Datos de ejemplo: [origen, destino, opciones] -> [distancia real]
+# X: Origen, destino (convertido a IDs numéricos), y número de opciones. Y: distancia real.
+X = np.array([
+    [1, 2, 3],  # Origen 1, Destino 2, 3 opciones en la ruta
+    [2, 3, 5],  # Origen 2, Destino 3, 5 opciones en la ruta
+    [1, 3, 4],  # Origen 1, Destino 3, 4 opciones en la ruta
+    [3, 4, 7],  # Origen 3, Destino 4, 7 opciones en la ruta
+    [1, 4, 5],  # Origen 1, Destino 4, 5 opciones en la ruta
+    [1, 1, 2],  # Origen 1, Destino 1, 2 opciones en la ruta
+    [3, 3, 6],  # Origen 3, Destino 3, 6 opciones en la ruta
+    [5, 3, 8],  # Origen 5, Destino 3, 8 opciones en la ruta
+    [3, 1, 4],  # Origen 3, Destino 1, 4 opciones en la ruta
+    [0, 1, 1]   # Origen 0, Destino 1, 1 opción en la ruta
+])
+
+y = np.array([15, 20, 25, 18, 30, 35, 22, 28, 17, 10])  # Distancias reales correspondientes (10 elementos)
+
+# Entrenar el modelo con datos de ejemplo, mostrando las épocas en consola
+history = model.fit(X, y, epochs=70, verbose=1)  # verbose=1 para mostrar el progreso de las épocas
+
+# Guardar el modelo entrenado
+model.save('modelo_entrenado_rutas.keras')
+
+print("Modelo entrenado y guardado exitosamente.")
+
+# Graficar la evolución de la pérdida a lo largo de las épocas
+plt.plot(history.history['loss'])
+plt.title('Gráfico de Aprendizaje (Pérdida)')
+plt.xlabel('Épocas')
+plt.ylabel('Pérdida')
+plt.show()
